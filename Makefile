@@ -4,28 +4,28 @@ gen-conf:
 	cd ./scripts && bash ./main.sh init_cfg
 
 start:
-	docker-compose up -d
+	podman-compose up -d
 	cd ./scripts && bash ./main.sh reload_nginx
 
 install: gen-conf start
 	sleep 1
-	docker-compose exec ${oidc_server_container} bash -c "make init"
-	docker-compose exec ${oidc_server_container} bash -c "python manage.py loaddata oidc-server-outline-client"
+	podman-compose exec ${oidc_server_container} bash -c "make init"
+	podman-compose exec ${oidc_server_container} bash -c "python manage.py loaddata oidc-server-outline-client"
 	cd ./scripts && bash ./main.sh reload_nginx
 
 restart: stop start
 
 logs:
-	docker-compose logs -f
+	podman-compose logs -f
 
 stop:
-	docker-compose down || true
+	podman-compose down || true
 
 update-images:
-	docker-compose pull
+	podman-compose pull
 
 clean-docker: stop
-	docker-compose rm -fsv || true
+	podman-compose rm -fsv || true
 
 clean-conf:
 	rm -rfv env.* .env docker-compose.yml config/uc/fixtures/*.json
